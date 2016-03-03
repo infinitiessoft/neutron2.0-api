@@ -17,6 +17,7 @@ package com.infinities.neutron.resource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -54,6 +55,21 @@ public class Version2Resource {
 		} catch (CloneNotSupportedException e) {
 			throw new WebApplicationException(e, Status.NOT_FOUND);
 		}
+	}
+
+	@Path("networks")
+	public Class<NetworksResource> getNetworksResource() {
+		return NetworksResource.class;
+	}
+
+	@Path("subnets")
+	public Class<SubnetsResource> getSubnetsResource() {
+		return SubnetsResource.class;
+	}
+
+	@Path("ports")
+	public Class<PortsResource> getPortsResource() {
+		return PortsResource.class;
 	}
 
 	// @Path("{projectId}")

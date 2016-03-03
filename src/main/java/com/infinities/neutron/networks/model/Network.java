@@ -66,7 +66,6 @@ public class Network implements Serializable {
 	/**
 	 * @return the subnets
 	 */
-	@XmlTransient
 	public List<String> getSubnets() {
 		return subnets;
 	}
@@ -75,7 +74,6 @@ public class Network implements Serializable {
 	 * @param subnets
 	 *            the subnets to set
 	 */
-	@XmlElement(name = "subnets")
 	public void setSubnets(List<String> subnets) {
 		this.subnets = subnets;
 	}

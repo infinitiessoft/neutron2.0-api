@@ -26,8 +26,8 @@ import com.infinities.skyport.async.service.network.AsyncVLANSupport;
 import com.infinities.skyport.cache.CachedServiceProvider;
 import com.infinities.skyport.service.ConfigurationHome;
 
-public class DaseinNetworksApi implements NetworksApi{
-	
+public class DaseinNetworksApi implements NetworksApi {
+
 	private static final String NETWORK_TYPE = "vlan";
 	private ConfigurationHome configurationHome;
 
@@ -43,7 +43,7 @@ public class DaseinNetworksApi implements NetworksApi{
 			context = Context.getAdminContext("no");
 		}
 		AsyncResult<Iterable<VLAN>> result = getSupport(context.getProjectId()).listVlans();
-		
+
 		Iterable<VLAN> iterable = result.get();
 		Iterator<VLAN> iterator = iterable.iterator();
 
@@ -55,7 +55,7 @@ public class DaseinNetworksApi implements NetworksApi{
 
 		return networks;
 	}
-	
+
 	private Network toNetwork(VLAN vlan) throws CloudException, InternalException, JSONException {
 		Network network = new Network();
 		network.setId(vlan.getProviderVlanId());
@@ -63,22 +63,25 @@ public class DaseinNetworksApi implements NetworksApi{
 		network.setStatus(toStatus(vlan.getCurrentState()));
 		network.setProviderNetworkType(NETWORK_TYPE);
 		network.setTenantId(vlan.getTag("tenant_id"));
-		JSONArray jsonArray = new JSONArray(vlan.getTag("subnets"));
+		System.err.println("vlan: " + vlan.getTags().keySet() + "  " + vlan.getTags().containsKey("subnets"));
 		List<String> subnets = new ArrayList<String>();
-		for (int i = 0 ; i < jsonArray.length() ; i++) {
-			subnets.add(jsonArray.getString(i));
+		if (vlan.getTags().containsKey("subnets")) {
+			JSONArray jsonArray = new JSONArray(vlan.getTag("subnets"));
+			for (int i = 0; i < jsonArray.length(); i++) {
+				subnets.add(jsonArray.getString(i));
+			}
 		}
 		network.setSubnets(subnets);
 		return network;
 	}
-	
+
 	private String toStatus(VLANState state) {
 		if (state.equals(VLANState.AVAILABLE)) {
 			return "ACTIVE";
 		}
 		return "BUILD";
 	}
-	
+
 	@Override
 	public Network getNetwork(NovaRequestContext context, String projectId, String networkId) throws Exception {
 		if (context == null) {
@@ -97,7 +100,7 @@ public class DaseinNetworksApi implements NetworksApi{
 			context = Context.getAdminContext("no");
 		}
 		String name = networkForCreate.getName();
-		
+
 		VlanCreateOptions options = VlanCreateOptions.getInstance(name, null, null, null, null, null);
 		AsyncResult<VLAN> result = getSupport(context.getProjectId()).createVlan(options);
 		VLAN vlan = result.get();
@@ -110,7 +113,7 @@ public class DaseinNetworksApi implements NetworksApi{
 			NetworkForUpdate networkForUpdate) throws Exception {
 		throw new UnsupportedOperationException("network update not supported");
 	}
-	
+
 	@Override
 	public void deleteNetwork(NovaRequestContext context, String projectId, String networkId) throws Exception {
 		if (context == null) {
@@ -118,7 +121,7 @@ public class DaseinNetworksApi implements NetworksApi{
 		}
 		getSupport(context.getProjectId()).removeVlan(networkId);
 	}
-	
+
 	private AsyncVLANSupport getSupport(String id) throws ConcurrentException {
 		CachedServiceProvider provider = configurationHome.findById(id);
 
