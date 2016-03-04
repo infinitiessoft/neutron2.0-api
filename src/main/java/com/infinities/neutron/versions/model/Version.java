@@ -21,8 +21,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.infinities.api.openstack.commons.model.Link;
 import com.infinities.neutron.resources.model.Resource;
-import com.infinities.nova.response.model.Link;
 
 public class Version implements java.io.Serializable, Cloneable {
 

@@ -17,13 +17,12 @@ import javax.ws.rs.core.Response.Status;
 
 import org.springframework.stereotype.Component;
 
+import com.infinities.api.openstack.commons.context.OpenstackRequestContext;
 import com.infinities.neutron.networks.controller.NetworksController;
 import com.infinities.neutron.networks.model.NetworkForCreate;
 import com.infinities.neutron.networks.model.NetworkForUpdate;
 import com.infinities.neutron.networks.model.NetworkTemplate;
 import com.infinities.neutron.networks.model.Networks;
-import com.infinities.nova.NovaRequestContext;
-import com.infinities.nova.common.Resource;
 
 @Component
 @Consumes(MediaType.APPLICATION_JSON)
@@ -40,9 +39,8 @@ public class NetworksResource {
 
 	@GET
 	public Networks index(@Context ContainerRequestContext requestContext) throws Exception {
-		NovaRequestContext novaContext = (NovaRequestContext) requestContext.getProperty("nova.context");
+		OpenstackRequestContext novaContext = (OpenstackRequestContext) requestContext.getProperty("nova.context");
 		String projectId = novaContext.getProjectId();
-		Resource.processStack(requestContext, projectId, novaContext);
 		return controller.index(requestContext, projectId);
 	}
 
@@ -50,18 +48,16 @@ public class NetworksResource {
 	@Path("{networkId}")
 	public NetworkTemplate show(@PathParam("networkId") String networkId, @Context ContainerRequestContext requestContext)
 			throws Exception {
-		NovaRequestContext novaContext = (NovaRequestContext) requestContext.getProperty("nova.context");
+		OpenstackRequestContext novaContext = (OpenstackRequestContext) requestContext.getProperty("nova.context");
 		String projectId = novaContext.getProjectId();
-		Resource.processStack(requestContext, projectId, novaContext);
 		return controller.show(requestContext, projectId, networkId);
 	}
 
 	@POST
 	public NetworkTemplate create(@Context ContainerRequestContext requestContext, NetworkForCreate networkForCreate)
 			throws Exception {
-		NovaRequestContext novaContext = (NovaRequestContext) requestContext.getProperty("nova.context");
+		OpenstackRequestContext novaContext = (OpenstackRequestContext) requestContext.getProperty("nova.context");
 		String projectId = novaContext.getProjectId();
-		Resource.processStack(requestContext, projectId, novaContext);
 		return controller.create(requestContext, projectId, networkForCreate);
 	}
 
@@ -69,9 +65,8 @@ public class NetworksResource {
 	@Path("{networkId}")
 	public NetworkTemplate update(@PathParam("networkId") String networkId, @Context ContainerRequestContext requestContext,
 			NetworkForUpdate networkForUpdate) throws Exception {
-		NovaRequestContext novaContext = (NovaRequestContext) requestContext.getProperty("nova.context");
+		OpenstackRequestContext novaContext = (OpenstackRequestContext) requestContext.getProperty("nova.context");
 		String projectId = novaContext.getProjectId();
-		Resource.processStack(requestContext, projectId, novaContext);
 		return controller.update(requestContext, projectId, networkId, networkForUpdate);
 	}
 
@@ -79,9 +74,8 @@ public class NetworksResource {
 	@Path("{networkId}")
 	public Response delete(@PathParam("networkId") String networkId, @Context ContainerRequestContext requestContext)
 			throws Exception {
-		NovaRequestContext novaContext = (NovaRequestContext) requestContext.getProperty("nova.context");
+		OpenstackRequestContext novaContext = (OpenstackRequestContext) requestContext.getProperty("nova.context");
 		String projectId = novaContext.getProjectId();
-		Resource.processStack(requestContext, projectId, novaContext);
 		controller.delete(projectId, networkId, requestContext);
 		return Response.status(Status.ACCEPTED).build();
 	}

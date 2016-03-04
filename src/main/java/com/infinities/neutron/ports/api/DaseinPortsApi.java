@@ -16,18 +16,18 @@ import org.dasein.cloud.network.RawAddress;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.infinities.api.openstack.commons.context.Context;
+import com.infinities.api.openstack.commons.context.OpenstackRequestContext;
 import com.infinities.neutron.ports.model.Port;
 import com.infinities.neutron.ports.model.Port.Binding;
 import com.infinities.neutron.ports.model.Port.Ip;
 import com.infinities.neutron.ports.model.PortForCreateTemplate;
-import com.infinities.nova.Context;
-import com.infinities.nova.NovaRequestContext;
 import com.infinities.skyport.async.AsyncResult;
 import com.infinities.skyport.async.service.network.AsyncVLANSupport;
 import com.infinities.skyport.cache.CachedServiceProvider;
 import com.infinities.skyport.service.ConfigurationHome;
 
-public class DaseinPortsApi implements PortsApi{
+public class DaseinPortsApi implements PortsApi {
 
 	private ConfigurationHome configurationHome;
 
@@ -38,63 +38,63 @@ public class DaseinPortsApi implements PortsApi{
 	}
 
 	@Override
-	public List<Port> getPorts(NovaRequestContext context, String projectId) throws Exception {
+	public List<Port> getPorts(OpenstackRequestContext context, String projectId) throws Exception {
 		if (context == null) {
 			context = Context.getAdminContext("no");
 		}
 		AsyncResult<Iterable<NetworkInterface>> result = getSupport(context.getProjectId()).listNetworkInterfaces();
 		Iterable<NetworkInterface> iterable = result.get();
 		Iterator<NetworkInterface> iterator = iterable.iterator();
-		 
+
 		List<Port> ports = new ArrayList<Port>();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			NetworkInterface nic = iterator.next();
 			ports.add(toPort(nic));
 		}
 		return ports;
 	}
-	
+
 	@Override
-	public Port getPort(NovaRequestContext context, String projectId, String portId) throws Exception {
+	public Port getPort(OpenstackRequestContext context, String projectId, String portId) throws Exception {
 		if (context == null) {
 			context = Context.getAdminContext("no");
 		}
 		AsyncResult<NetworkInterface> result = getSupport(context.getProjectId()).getNetworkInterface(portId);
 		NetworkInterface nic = result.get();
-		 
+
 		return toPort(nic);
 	}
-	
+
 	@Override
-	public Port createPort(NovaRequestContext context, String projectId, PortForCreateTemplate portForCreateTemplate) throws Exception {
+	public Port createPort(OpenstackRequestContext context, String projectId, PortForCreateTemplate portForCreateTemplate)
+			throws Exception {
 		if (context == null) {
 			context = Context.getAdminContext("no");
 		}
 		String vlanId = portForCreateTemplate.getPort().getNetworkId();
 		String name = portForCreateTemplate.getPort().getName();
-		
+
 		NICCreateOptions options = NICCreateOptions.getInstanceForVlan(vlanId, name, null);
 		AsyncResult<NetworkInterface> result = getSupport(context.getProjectId()).createNetworkInterface(options);
 		NetworkInterface nic = result.get();
-		 
+
 		return toPort(nic);
 	}
-	
 
 	@Override
-	public Port updatePort(NovaRequestContext context, String projectId, String portId,
+	public Port updatePort(OpenstackRequestContext context, String projectId, String portId,
 			PortForCreateTemplate portForCreateTemplate) throws Exception {
 		throw new UnsupportedOperationException("port update not supported");
 	}
 
 	@Override
-	public void deletePort(NovaRequestContext context, String projectId, String portId) throws Exception {
+	public void deletePort(OpenstackRequestContext context, String projectId, String portId) throws Exception {
 		if (context == null) {
 			context = Context.getAdminContext("no");
 		}
 		getSupport(context.getProjectId()).removeNetworkInterface(portId);
 	}
-	
+
 	private Port toPort(NetworkInterface nic) {
 		Port output = new Port();
 		output.setId(nic.getProviderNetworkInterfaceId());
@@ -105,7 +105,7 @@ public class DaseinPortsApi implements PortsApi{
 		if (!Strings.isNullOrEmpty(nic.getProviderSubnetId())) {
 			List<Ip> ips = new ArrayList<Ip>();
 			RawAddress[] addresses = nic.getIpAddresses();
-			for (int i = 0 ; i < addresses.length ; i++) {
+			for (int i = 0; i < addresses.length; i++) {
 				Ip ip = new Ip();
 				ip.setSubnetId(nic.getProviderSubnetId());
 				ip.setAddress(nic.getIpAddresses()[i].getIpAddress());
@@ -133,14 +133,14 @@ public class DaseinPortsApi implements PortsApi{
 		}
 		return output;
 	}
-	
+
 	private String toState(NICState state) {
 		if (state.equals(NICState.IN_USE)) {
 			return "ACTIVE";
 		}
 		return "DOWN";
 	}
-	
+
 	private AsyncVLANSupport getSupport(String id) throws ConcurrentException {
 		CachedServiceProvider provider = configurationHome.findById(id);
 

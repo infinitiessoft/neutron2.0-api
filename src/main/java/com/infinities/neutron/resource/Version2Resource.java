@@ -72,15 +72,4 @@ public class Version2Resource {
 		return PortsResource.class;
 	}
 
-	// @Path("{projectId}")
-	// public Class<ProjectMapperResource> getProjectMapperResource() {
-	// // nova.wsgi.Resource.call
-	// return ProjectMapperResource.class;
-	// }
-	//
-	// @Path("extensions")
-	// public Class<ExtensionsResource> getExtensionsResource() {
-	// return ExtensionsResource.class;
-	// }
-
 }

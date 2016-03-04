@@ -16,11 +16,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.google.common.base.Preconditions;
+import com.infinities.api.openstack.commons.context.Context;
+import com.infinities.api.openstack.commons.context.OpenstackRequestContext;
 import com.infinities.neutron.networks.model.Network;
 import com.infinities.neutron.networks.model.NetworkForCreate;
 import com.infinities.neutron.networks.model.NetworkForUpdate;
-import com.infinities.nova.Context;
-import com.infinities.nova.NovaRequestContext;
 import com.infinities.skyport.async.AsyncResult;
 import com.infinities.skyport.async.service.network.AsyncVLANSupport;
 import com.infinities.skyport.cache.CachedServiceProvider;
@@ -38,7 +38,7 @@ public class DaseinNetworksApi implements NetworksApi {
 	}
 
 	@Override
-	public List<Network> getNetworks(NovaRequestContext context, String projectId) throws Exception {
+	public List<Network> getNetworks(OpenstackRequestContext context, String projectId) throws Exception {
 		if (context == null) {
 			context = Context.getAdminContext("no");
 		}
@@ -63,7 +63,6 @@ public class DaseinNetworksApi implements NetworksApi {
 		network.setStatus(toStatus(vlan.getCurrentState()));
 		network.setProviderNetworkType(NETWORK_TYPE);
 		network.setTenantId(vlan.getTag("tenant_id"));
-		System.err.println("vlan: " + vlan.getTags().keySet() + "  " + vlan.getTags().containsKey("subnets"));
 		List<String> subnets = new ArrayList<String>();
 		if (vlan.getTags().containsKey("subnets")) {
 			JSONArray jsonArray = new JSONArray(vlan.getTag("subnets"));
@@ -83,7 +82,7 @@ public class DaseinNetworksApi implements NetworksApi {
 	}
 
 	@Override
-	public Network getNetwork(NovaRequestContext context, String projectId, String networkId) throws Exception {
+	public Network getNetwork(OpenstackRequestContext context, String projectId, String networkId) throws Exception {
 		if (context == null) {
 			context = Context.getAdminContext("no");
 		}
@@ -94,7 +93,7 @@ public class DaseinNetworksApi implements NetworksApi {
 	}
 
 	@Override
-	public Network createNetwork(NovaRequestContext context, String projectId, NetworkForCreate networkForCreate)
+	public Network createNetwork(OpenstackRequestContext context, String projectId, NetworkForCreate networkForCreate)
 			throws Exception {
 		if (context == null) {
 			context = Context.getAdminContext("no");
@@ -109,13 +108,13 @@ public class DaseinNetworksApi implements NetworksApi {
 	}
 
 	@Override
-	public Network updateNetwork(NovaRequestContext context, String projectId, String networkId,
+	public Network updateNetwork(OpenstackRequestContext context, String projectId, String networkId,
 			NetworkForUpdate networkForUpdate) throws Exception {
 		throw new UnsupportedOperationException("network update not supported");
 	}
 
 	@Override
-	public void deleteNetwork(NovaRequestContext context, String projectId, String networkId) throws Exception {
+	public void deleteNetwork(OpenstackRequestContext context, String projectId, String networkId) throws Exception {
 		if (context == null) {
 			context = Context.getAdminContext("no");
 		}

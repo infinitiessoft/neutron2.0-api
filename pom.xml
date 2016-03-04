@@ -37,18 +37,14 @@
 
 		<dependency>
 			<groupId>com.infinities.skyport</groupId>
-			<artifactId>skyport-jpa</artifactId>
+			<artifactId>openstack-api-commons</artifactId>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
@@ -64,12 +60,6 @@
 			<artifactId>keystone4j-client</artifactId>
 		</dependency>
 
-
-		<!-- Database -->
-		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-		</dependency>
 
 		<!-- Jackson -->
 		<dependency>

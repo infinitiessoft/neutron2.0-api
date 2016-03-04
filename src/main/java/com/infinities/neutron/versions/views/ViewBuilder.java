@@ -25,19 +25,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.UriBuilder;
-
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.infinities.api.openstack.commons.model.Link;
 import com.infinities.neutron.resources.model.Resource;
 import com.infinities.neutron.resources.model.Resources;
 import com.infinities.neutron.versions.model.Version;
 import com.infinities.neutron.versions.model.Versions;
-import com.infinities.nova.common.config.Config;
-import com.infinities.nova.response.model.Link;
 
 public class ViewBuilder {
 
@@ -52,50 +48,27 @@ public class ViewBuilder {
 		this.baseUrl = baseUrl;
 	}
 
-	public Versions buildChoices(Map<String, Version> versions, String requestPath) throws URISyntaxException {
-		List<Version> versionObjs = new ArrayList<Version>();
-		for (Version version : versions.values()) {
-			Version proxy = new Version();
-			proxy.setId(version.getId());
-			proxy.setStatus(version.getStatus());
-			com.infinities.nova.response.model.Link link = new com.infinities.nova.response.model.Link();
-			link.setRel("self");
-			link.setHref(generateHref(version.getId(), requestPath));
-			proxy.getLinks().add(link);
-
-			proxy.setMediaTypes(version.getMediaTypes());
-			versionObjs.add(proxy);
-		}
-		Versions wrapper = new Versions(versionObjs);
-		return wrapper;
-	}
-
 	public Versions buildVersions(Map<String, Version> versions) throws URISyntaxException {
 		List<Version> versionObjs = new ArrayList<Version>();
 
 		for (Version version : versions.values()) {
-			Version proxy = new Version();
-			proxy.setId(version.getId());
-			proxy.setStatus(version.getStatus());
-			proxy.setUpdated(version.getUpdated());
-			proxy.setLinks(buildLinks(version));
-			proxy.setMediaTypes(null);
-			versionObjs.add(proxy);
+			versionObjs.add(build(version));
 		}
 
 		Versions wrapper = new Versions(versionObjs);
 		return wrapper;
 	}
 
-	private String generateHref(String version, String path) throws URISyntaxException {
-		String prefix = updateComputeLinkPrefix(this.baseUrl);
+	public Version build(Version version) throws URISyntaxException {
+		Version ret = new Version();
+		ret.setId(version.getId());
+		ret.setStatus(version.getStatus());
+		ret.setLinks(buildLinks(version));
+		return ret;
+	}
 
-		if (Strings.isNullOrEmpty(path)) {
-			return osPathJoin(prefix, version) + "/";
-		} else {
-			path = path.replaceAll("^/+|/+$", "");
-			return osPathJoin(prefix, version, path);
-		}
+	private String generateHref(String version) throws URISyntaxException {
+		return osPathJoin(baseUrl, version);
 	}
 
 	private String osPathJoin(String... strings) {
@@ -111,24 +84,8 @@ public class ViewBuilder {
 		}));
 	}
 
-	private String updateComputeLinkPrefix(String origUrl) throws URISyntaxException {
-		return updateLinkPrefix(origUrl, Config.Instance.getOpt("osapi_compute_link_prefix").asText());
-	}
-
-	private String updateLinkPrefix(String origUrl, String prefix) throws URISyntaxException {
-		if (Strings.isNullOrEmpty(prefix)) {
-			return origUrl;
-		}
-
-		URI prefixParts = new URI(prefix);
-		URI urlParts =
-				UriBuilder.fromUri(origUrl).scheme(prefixParts.getScheme()).host(prefixParts.getHost())
-						.port(prefixParts.getPort()).replacePath(prefixParts.getPath()).build();
-		return urlParts.toString();
-	}
-
 	private List<Link> buildLinks(Version version) throws URISyntaxException {
-		String href = this.generateHref(version.getId(), null);
+		String href = this.generateHref(version.getId());
 		List<Link> links = new ArrayList<Link>(1);
 		Link link = new Link();
 		link.setRel("self");

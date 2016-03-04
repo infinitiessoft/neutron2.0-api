@@ -2,9 +2,9 @@ package com.infinities.neutron.subnets.api;
 
 import java.util.List;
 
+import com.infinities.api.openstack.commons.context.OpenstackRequestContext;
 import com.infinities.neutron.subnets.model.Subnet;
 import com.infinities.neutron.subnets.model.SubnetForCreateTemplate;
-import com.infinities.nova.NovaRequestContext;
 
 public interface SubnetsApi {
 
@@ -14,7 +14,7 @@ public interface SubnetsApi {
 	 * @return
 	 * @throws Exception
 	 */
-	List<Subnet> getSubnets(NovaRequestContext context, String projectId) throws Exception;
+	List<Subnet> getSubnets(OpenstackRequestContext context, String projectId) throws Exception;
 
 	/**
 	 * @param context
@@ -23,7 +23,7 @@ public interface SubnetsApi {
 	 * @return
 	 * @throws Exception
 	 */
-	Subnet getSubnet(NovaRequestContext context, String projectId, String subnetId) throws Exception;
+	Subnet getSubnet(OpenstackRequestContext context, String projectId, String subnetId) throws Exception;
 
 	/**
 	 * @param context
@@ -32,7 +32,7 @@ public interface SubnetsApi {
 	 * @return
 	 * @throws Exception
 	 */
-	Subnet createSubnet(NovaRequestContext context, String projectId, SubnetForCreateTemplate subnetForCreateTemplate)
+	Subnet createSubnet(OpenstackRequestContext context, String projectId, SubnetForCreateTemplate subnetForCreateTemplate)
 			throws Exception;
 
 	/**
@@ -43,8 +43,8 @@ public interface SubnetsApi {
 	 * @return
 	 * @throws Exception
 	 */
-	Subnet updateSubnet(NovaRequestContext context, String projectId, String subnetId, SubnetForCreateTemplate subnetForCreateTemplate)
-			throws Exception;
+	Subnet updateSubnet(OpenstackRequestContext context, String projectId, String subnetId,
+			SubnetForCreateTemplate subnetForCreateTemplate) throws Exception;
 
 	/**
 	 * @param context
@@ -52,5 +52,5 @@ public interface SubnetsApi {
 	 * @param subnetId
 	 * @throws Exception
 	 */
-	void deleteSubnet(NovaRequestContext context, String projectId, String subnetId) throws Exception;
+	void deleteSubnet(OpenstackRequestContext context, String projectId, String subnetId) throws Exception;
 }

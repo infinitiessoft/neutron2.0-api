@@ -41,7 +41,7 @@ public class VersionsApi {
 		v2.setId("v2.0");
 		v2.setStatus("CURRENT");
 		v2.setUpdated("2011-01-21T11:33:21Z");
-		com.infinities.nova.response.model.Link linkV2 = new com.infinities.nova.response.model.Link();
+		com.infinities.api.openstack.commons.model.Link linkV2 = new com.infinities.api.openstack.commons.model.Link();
 		linkV2.setRel("describedby");
 		linkV2.setType("text/html");
 		linkV2.setHref(LINKS.get("v2.0").getHtml());
